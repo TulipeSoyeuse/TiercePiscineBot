@@ -6,7 +6,7 @@ from tiercepiscinebot.api import API_handler
 class Database:
     def __init__(self) -> None:
         self.poulain = False
-        self.con = sqlite3.connect("mydatabase.db")
+        self.con = sqlite3.connect("poulain.db")
         self.cur = self.con.cursor()
         self.handler = API_handler()
 
@@ -26,5 +26,4 @@ class Database:
             return "stp passe moi un login correct par pitié (le mentor existe po)"
 
         self.cur.execute(f"INSERT INTO poulain VALUES({poulain}, {mentor})")
-        return f"votre choix a bien été pris en compte {mentor}"
         return f"votre choix a bien été pris en compte {mentor}"
