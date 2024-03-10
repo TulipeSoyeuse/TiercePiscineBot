@@ -3,6 +3,7 @@ from random import randint
 
 import discord
 from discord import app_commands
+from discord.ext import tasks
 from dotenv import load_dotenv
 from tiercepiscinebot.db_interaction import Database
 from tiercepiscinebot.params import *
@@ -50,11 +51,24 @@ async def COUCOU_command(interaction):
 
 @tree.command(
     name="list",
-    description="list tout les poulains actuels",
+    description="liste tout les poulains actuels",
     guild=discord.Object(id=os.getenv("GUILD_ID")),
 )
 async def LIST_command(interaction):
     await interaction.response.send_message(DB.list())
+
+
+@tree.command(
+    name="help",
+    guild=discord.Object(id=os.getenv("GUILD_ID")),
+)
+async def HELP_command(interaction):
+    await interaction.response.send_message(HELP)
+
+
+@tasks.loop(hours=1)
+async def update_score_exe():
+    await DB.update_scoring()
 
 
 # launch

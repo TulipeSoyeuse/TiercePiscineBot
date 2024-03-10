@@ -3,13 +3,18 @@ import traceback
 from sqlite3 import IntegrityError
 
 from tiercepiscinebot.api import API_handler
+from tiercepiscinebot.params import *
 
 
 class Database:
     def __init__(self) -> None:
-        self.poulain = False
-        self.con = sqlite3.connect("poulain.db")
+        self.con = sqlite3.connect("poulain.db", detect_types=sqlite3.PARSE_DECLTYPES)
         self.handler = API_handler()
+        cursor = self.con.cursor()
+        cursor.execute(CREATE_TABLE_POULAIN)
+        cursor.execute(CREATE_TABLE_EXERCICE)
+        self.con.commit()
+        cursor.close()
 
     def cursor_handler(func):
         def wrapper(*args):
@@ -22,15 +27,6 @@ class Database:
 
     @cursor_handler
     def add_poulain(self, poulain: str, mentor: str, cursor: sqlite3.Cursor) -> str:
-        if not self.poulain:
-            cursor.execute(
-                """CREATE TABLE IF NOT EXISTS poulains (
-	                        poulain_id INTEGER PRIMARY KEY,
-	                        intraID TEXT NOT NULL UNIQUE,
-	                        mentorID TEXT NOT NULL UNIQUE)"""
-            )
-            self.poulain = True
-
         poulain_ = self.handler.get_user_info(poulain)
         if not poulain_:
             return "stp passe moi un login correct par pitié (le poulain existe po)"
@@ -39,7 +35,8 @@ class Database:
             return "stp passe moi un login correct par pitié (le mentor existe po)"
         try:
             cursor.execute(
-                f"INSERT INTO poulains(intraID, mentorID) VALUES('{poulain}', '{mentor}')"
+                "INSERT INTO poulains(intraID, mentorID) VALUES(?, ?)",
+                (poulain, mentor),
             )
         except IntegrityError as e:
             return (
@@ -52,17 +49,44 @@ class Database:
     def get_usr_lst(self, poulain):
         response = self.handler.get_user_info(poulain)
         if not response:
-            return None
-        res = {
-            "poulain": poulain,
-            "level": self.handler.user_get_level(response),
-            "exam1": response.get,
-        }
+            return "Error"
+        return LIST_STRING.format(
+            poulain=poulain,
+            level=API_handler.user_get_level(response),
+            exam1=API_handler.user_get_exam(response, 0),
+            exam2=API_handler.user_get_exam(response, 1),
+            exam3=API_handler.user_get_exam(response, 2),
+            exam4=API_handler.user_get_exam(response, 3),
+        )
 
     @cursor_handler
     def list(self, cursor: sqlite3.Cursor):
         cursor.execute("SELECT intraID FROM poulains")
         res = str()
         for p in cursor.fetchall():
-            poulain = self.handler.get_user_info(p)
+            res += self.get_usr_lst(p[0])
         return res
+
+    @cursor_handler
+    def update_scoring(self, cursor: sqlite3.Cursor):
+        cursor.execute("DROP TABLE exercice")
+        cursor.execute(CREATE_TABLE_EXERCICE)
+        cursor.execute("SELECT id, IntraID FROM poulains")
+        for poulain in cursor.fetchall():
+            info = self.handler.get_user_info(poulain[1])
+            for exercice in EXERCICE_IDS:
+                exercice_res = API_handler.user_get_exercice(info, exercice[0])
+                if exercice_res:
+                    cursor.execute(
+                        """REPLACE INTO exercice (
+                        exercice_name, exercice_id, poulain_id, timestamp, final_grade )
+                        VALUES (?, ?, ?, ?, ?)""",
+                        (
+                            exercice[1],
+                            exercice[0],
+                            poulain[0],
+                            exercice_res[0],
+                            exercice_res[1],
+                        ),
+                    )
+        self.con.commit()
