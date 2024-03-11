@@ -2,6 +2,7 @@ import sqlite3
 import traceback
 from sqlite3 import IntegrityError
 
+import pandas as pd
 from tiercepiscinebot.api import API_handler
 from tiercepiscinebot.params import *
 
@@ -90,3 +91,15 @@ class Database:
                         ),
                     )
         self.con.commit()
+
+
+if __name__ == "__main__":
+    import json
+
+    with open("test.json", "r") as f:
+        res = json.load(f)
+    # print(API_handler.user_get_exercice(res, 1270))
+    db = Database()
+    db.update_scoring()
+    print(pd.read_sql_query("SELECT * FROM exercice", db.con).to_markdown())
+    # update_scoring()

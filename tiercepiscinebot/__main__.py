@@ -2,6 +2,7 @@ import os
 from random import randint
 
 import discord
+import pandas as pd
 from discord import app_commands
 from discord.ext import tasks
 from dotenv import load_dotenv
@@ -68,7 +69,10 @@ async def HELP_command(interaction):
 
 @tasks.loop(hours=1)
 async def update_score_exe():
-    await DB.update_scoring()
+    print("updating_exercices...")
+    DB.update_scoring()
+    print(pd.read_sql_query("SELECT * FROM exercice", DB.con).to_markdown())
+    print("score updated")
 
 
 # launch
@@ -76,6 +80,7 @@ async def update_score_exe():
 async def on_ready():
     await tree.sync(guild=discord.Object(id=os.getenv("GUILD_ID")))
     print(f"logged in as {client.user}")
+    update_score_exe.start()
 
 
 client.run(os.getenv("TOKEN"))
