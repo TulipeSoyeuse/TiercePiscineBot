@@ -3,6 +3,7 @@ import traceback
 from sqlite3 import IntegrityError
 
 import pandas as pd
+
 from tiercepiscinebot.api import API_handler
 from tiercepiscinebot.params import *
 
@@ -44,8 +45,17 @@ class Database:
                 "oups il semblerait que tu te sois foutu de ma gueule :\n\n"
                 + traceback.format_exc()
             )
+        self.update_scoring()
         self.con.commit()
         return f"votre choix a bien été pris en compte {mentor}, ton poulain sera :{poulain}"
+
+    @cursor_handler
+    def cleanup(self, cursor: sqlite3.Cursor):
+        cursor.execute("DROP TABLE exercice")
+        cursor.execute("DROP TABLE poulains")
+        cursor.execute(CREATE_TABLE_POULAIN)
+        cursor.execute(CREATE_TABLE_EXERCICE)
+        self.con.commit()
 
     def get_usr_lst(self, poulain):
         response = self.handler.get_user_info(poulain)
@@ -96,10 +106,11 @@ class Database:
 if __name__ == "__main__":
     import json
 
-    with open("test.json", "r") as f:
-        res = json.load(f)
+    # with open("test.json", "r") as f:
+    #     res = json.load(f)
     # print(API_handler.user_get_exercice(res, 1270))
     db = Database()
+    db.cleanup()
     db.update_scoring()
-    print(pd.read_sql_query("SELECT * FROM exercice", db.con).to_markdown())
+    print(pd.read_sql_query("SELECT * FROM poulains", db.con).to_markdown())
     # update_scoring()

@@ -6,6 +6,7 @@ import pandas as pd
 from discord import app_commands
 from discord.ext import tasks
 from dotenv import load_dotenv
+
 from tiercepiscinebot.db_interaction import Database
 from tiercepiscinebot.params import *
 
@@ -65,6 +66,15 @@ async def LIST_command(interaction):
 )
 async def HELP_command(interaction):
     await interaction.response.send_message(HELP)
+
+
+@tree.command(
+    name="cleanup",
+    guild=discord.Object(id=os.getenv("GUILD_ID")),
+)
+async def cleanup_command(interaction):
+    DB.cleanup()
+    await interaction.response.send_message("DB clean")
 
 
 @tasks.loop(hours=1)

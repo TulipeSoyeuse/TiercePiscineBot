@@ -16,9 +16,11 @@ HELP = """
 """
 
 CREATE_TABLE_POULAIN = """CREATE TABLE IF NOT EXISTS poulains (
+                            id INTEGER NOT NULL UNIQUE,
 	                        intraID TEXT NOT NULL UNIQUE,
 	                        mentorID TEXT NOT NULL UNIQUE,
-                            Pts INTEGER )"""
+                            Pts INTEGER,
+                            PRIMARY KEY (id))"""
 
 CREATE_TABLE_EXERCICE = """CREATE TABLE IF NOT EXISTS exercice (
                             exercice_name TEXT NOT NULL,
