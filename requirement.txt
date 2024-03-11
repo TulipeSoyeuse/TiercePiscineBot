@@ -1,0 +1,6 @@
+discord-py 
+python-dotenv 
+requests-oauth2client 
+pandas 
+tabulate 
+mysql-connector-python 
