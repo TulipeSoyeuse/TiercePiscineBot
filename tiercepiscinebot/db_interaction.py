@@ -1,6 +1,7 @@
 import sqlite3
 import traceback
 from sqlite3 import IntegrityError
+from time import sleep
 
 import pandas as pd
 
@@ -49,6 +50,13 @@ class Database:
         self.con.commit()
         return f"votre choix a bien été pris en compte {mentor}, ton poulain sera :{poulain}"
 
+    def display(self):
+        res = "\n"
+        res += pd.read_sql_query("SELECT * from poulains", self.con).to_markdown()
+        res += "\n"
+        res += pd.read_sql_query("SELECT * from exercice", self.con).to_markdown()
+        return res
+
     @cursor_handler
     def cleanup(self, cursor: sqlite3.Cursor):
         cursor.execute("DROP TABLE exercice")
@@ -57,7 +65,7 @@ class Database:
         cursor.execute(CREATE_TABLE_EXERCICE)
         self.con.commit()
 
-    def get_usr_lst(self, poulain):
+    def get_usr_lst(self, poulain) -> str:
         response = self.handler.get_user_info(poulain)
         if not response:
             return "Error"
@@ -76,7 +84,13 @@ class Database:
         res = str()
         for p in cursor.fetchall():
             res += self.get_usr_lst(p[0])
+            sleep(0.6)
         return res
+
+    @cursor_handler
+    def delete_poulain(self, poulain, cursor: sqlite3.Cursor):
+        cursor.execute(DELETE_POULAIN_QUERY, (poulain,))
+        self.con.commit()
 
     @cursor_handler
     def update_scoring(self, cursor: sqlite3.Cursor):
@@ -100,17 +114,20 @@ class Database:
                             exercice_res[1],
                         ),
                     )
+            sleep(1)
         self.con.commit()
 
 
 if __name__ == "__main__":
     import json
 
-    # with open("test.json", "r") as f:
-    #     res = json.load(f)
-    # print(API_handler.user_get_exercice(res, 1270))
     db = Database()
-    db.cleanup()
-    db.update_scoring()
-    print(pd.read_sql_query("SELECT * FROM poulains", db.con).to_markdown())
+    res = db.handler.get_user_info("lfroehli")
+    with open("test.json", "w") as f:
+        json.dump(res, f)
+    # print(API_handler.user_get_exercice(res, 1270))
+    # db = Database()
+    # db.cleanup()
+    # db.update_scoring()
+    # print(pd.read_sql_query("SELECT * FROM poulains", db.con).to_markdown())
     # update_scoring()

@@ -53,11 +53,14 @@ async def COUCOU_command(interaction):
 
 @tree.command(
     name="list",
-    description="liste tout les poulains actuels",
+    description="list tout les poulains actuels",
     guild=discord.Object(id=os.getenv("GUILD_ID")),
 )
 async def LIST_command(interaction):
-    await interaction.response.send_message(DB.list())
+    await interaction.response.defer()
+    res = DB.list()
+    print(res)
+    await interaction.followup.send(res)
 
 
 @tree.command(
@@ -77,6 +80,24 @@ async def cleanup_command(interaction):
     await interaction.response.send_message("DB clean")
 
 
+@tree.command(
+    name="display",
+    guild=discord.Object(id=os.getenv("GUILD_ID")),
+)
+async def display_command(interaction):
+    await interaction.response.send_message(DB.display())
+
+
+@tree.command(
+    name="delete",
+    description="supprime ton poulain",
+    guild=discord.Object(id=os.getenv("GUILD_ID")),
+)
+async def delete_command(interaction, poulain_intra: str):
+    DB.delete_poulain(poulain_intra)
+    await interaction.response.send_message("poulain deleted")
+
+
 @tasks.loop(hours=1)
 async def update_score_exe():
     print("updating_exercices...")
@@ -90,7 +111,8 @@ async def update_score_exe():
 async def on_ready():
     await tree.sync(guild=discord.Object(id=os.getenv("GUILD_ID")))
     print(f"logged in as {client.user}")
-    update_score_exe.start()
+    if not update_score_exe.is_running():
+        update_score_exe.start()
 
 
 client.run(os.getenv("TOKEN"))

@@ -29,28 +29,32 @@ CREATE_TABLE_EXERCICE = """CREATE TABLE IF NOT EXISTS exercice (
 	                        timestamp TEXT NOT NULL ,
                             final_grade INTEGER NOT NULL)"""
 
+DELETE_POULAIN_QUERY = "DELETE FROM poulains WHERE intraID=?"
+
 EXERCICE_IDS = [
     (1305, "BSQ"),
-    (1304, "final exam"),
+    (1309, "Rush 02"),
+    (1310, "C Piscine Rush 01"),
+    (1308, "C Piscine Rush 00"),
     (1265, "C piscine 09"),
     (1264, "C piscine 08"),
-    (1309, "Rush 02"),
-    (1303, "exam 3"),
     (1270, "C Piscine C 07"),
-    (1310, "C Piscine Rush 01"),
     (1263, "C Piscine C 06"),
     (1262, "C Piscine C 05"),
-    (1302, "C Piscine Exam 01"),
     (1261, "C Piscine C 04"),
-    (1308, "C Piscine Rush 00"),
     (1259, "C Piscine C 02"),
     (1260, "C Piscine C 03"),
     (1258, "C Piscine C 01"),
-    (1301, "C Piscine Exam 00"),
     (1257, "C Piscine C 00"),
     (1256, "C Piscine Shell 01"),
     (1255, "C Piscine Shell 00"),
+    (1304, "final exam"),
+    (1303, "exam 3"),
+    (1302, "C Piscine Exam 01"),
+    (1301, "C Piscine Exam 00"),
 ]
+
+EXAM_IDS = []
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 

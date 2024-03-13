@@ -4,6 +4,7 @@ from typing import Union
 
 from dotenv import load_dotenv
 from requests_oauth2client import OAuth2Client, OAuth2ClientCredentialsAuth
+
 from tiercepiscinebot.params import *
 
 load_dotenv()
@@ -40,7 +41,6 @@ class API_handler:
             k = f"c-piscine-exam-0{exam_nbr}"
         else:
             k = "c-piscine-final-exam"
-        print(k)
         for v in response.get("projects_users", []):
             if v.get("project", {}).get("slug", {}) == k:
                 return v.get("final_mark", None)
@@ -49,7 +49,11 @@ class API_handler:
     def user_get_exercice(
         response: dict, exercice_id: int
     ) -> Union[tuple[datetime, int], None]:
-        for i in response.get("projects_users"):
+        if not response:
+            return None
+        for i in response.get("projects_users", None):
+            if not i:
+                return None
             if i.get("project", {}).get("id", 0) == exercice_id:
                 if i.get("validated?"):
                     return (i["marked_at"], i["final_mark"])
