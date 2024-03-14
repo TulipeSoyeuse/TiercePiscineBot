@@ -117,6 +117,35 @@ class Database:
             sleep(1)
         self.con.commit()
 
+    @cursor_handler
+    def set_score(self, cursor: sqlite3.Cursor):
+        cursor.execute("UPDATE poulains SET Pts=?", (0,))
+        for ex, val in EXERCICE_IDS:
+            ex = pd.read_sql_query(
+                "SELECT * FROM exercice WHERE exercice_id=?",
+                self.con,
+                params=(ex,),
+                parse_dates={"timestamp", DATE_FORMAT},
+            )
+            if ex.shape[0] == 0:
+                continue
+            for i in ex[ex.final_grade == ex.final_grade.max()].poulain_id:
+                cursor.execute("UPDATE poulains SET Pts= Pts + 1 where id=?", (i,))
+            cursor.execute(
+                "UPDATE poulains SET Pts= Pts + 1 WHERE id=?",
+                (ex[ex.timestamp == ex.timestamp.min()].poulain_id.iloc[0],),
+            )
+        self.con.commit()
+
+    @cursor_handler
+    def get_score(self, cursor: sqlite3.Cursor):
+        res = str()
+        cursor.execute(SCORE_QUERY)
+        records = cursor.fetchall()
+        for e, v in enumerate(records):
+            res += SCORE_MESSAGE.format(poulain=v[0], mentor=v[1], rank=e + 1, pts=v[2])
+        return res
+
 
 if __name__ == "__main__":
     import json

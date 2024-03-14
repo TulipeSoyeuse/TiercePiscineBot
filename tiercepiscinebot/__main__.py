@@ -98,11 +98,23 @@ async def delete_command(interaction, poulain_intra: str):
     await interaction.response.send_message("poulain deleted")
 
 
+@tree.command(
+    name="score",
+    description="classement",
+    guild=discord.Object(id=os.getenv("GUILD_ID")),
+)
+async def score_command(interaction):
+    print("\n\n")
+    DB.set_score()
+    await interaction.response.send_message(DB.get_score())
+
+
 @tasks.loop(hours=1)
 async def update_score_exe():
     print("updating_exercices...")
     DB.update_scoring()
-    print(pd.read_sql_query("SELECT * FROM exercice", DB.con).to_markdown())
+    print("\n", pd.read_sql_query("SELECT * FROM exercice", DB.con).to_markdown())
+    print("\n", pd.read_sql_query("SELECT * FROM poulains", DB.con).to_markdown())
     print("score updated")
 
 

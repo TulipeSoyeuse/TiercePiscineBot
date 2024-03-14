@@ -60,17 +60,6 @@ class API_handler:
                 return None
         return None
 
-    @staticmethod
-    def get_scoring(poulains: dict):
-        return
-        # ids = []
-        # values = []
-        # res = []
-        # for exercice in EXERCICE_IDS:
-        #     for poulains_id, poulains_info in poulains.items():
-        #         ids.append(poulains_id)
-        #         values.append(API_handler.user_get_exercice())
-
 
 if __name__ == "__main__":
     handler = API_handler()

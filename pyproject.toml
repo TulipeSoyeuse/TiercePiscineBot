@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tiercepiscinebot"
-version = "0.9.0"
+version = "1.0.0"
 description = ""
 authors = ["TulipeSoyeuse <romain.dupeux24@gmail.com>"]
 readme = "README.md"

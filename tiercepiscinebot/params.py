@@ -31,6 +31,10 @@ CREATE_TABLE_EXERCICE = """CREATE TABLE IF NOT EXISTS exercice (
 
 DELETE_POULAIN_QUERY = "DELETE FROM poulains WHERE intraID=?"
 
+SCORE_QUERY = "SELECT intraID, mentorID, Pts from poulains ORDER BY Pts DESC"
+
+SCORE_MESSAGE = "🐎 {poulain} / {mentor}:   {rank} avec {pts}pts\n"
+
 EXERCICE_IDS = [
     (1305, "BSQ"),
     (1309, "Rush 02"),
