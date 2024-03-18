@@ -13,6 +13,8 @@ CREEPY_THINGS = [
 HELP = """
 étape 1 : /add -> pour ajouter ton Pouain 
 étape 2 : /score -> pour demander ton score
+barem: 1pts si le poulain est le premier à validé le projet
+1 pts pour ceux qui ont le plus de points sur le projet des poulains.
 """
 
 CREATE_TABLE_POULAIN = """CREATE TABLE IF NOT EXISTS poulains (

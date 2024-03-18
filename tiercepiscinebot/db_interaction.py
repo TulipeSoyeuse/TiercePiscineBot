@@ -130,10 +130,10 @@ class Database:
             if ex.shape[0] == 0:
                 continue
             for i in ex[ex.final_grade == ex.final_grade.max()].poulain_id:
-                cursor.execute("UPDATE poulains SET Pts= Pts + 1 where id=?", (i,))
+                cursor.execute("UPDATE poulains SET Pts= Pts + 1 WHERE id=?", (i,))
             cursor.execute(
                 "UPDATE poulains SET Pts= Pts + 1 WHERE id=?",
-                (ex[ex.timestamp == ex.timestamp.min()].poulain_id.iloc[0],),
+                (int(ex[ex.timestamp == ex.timestamp.min()].poulain_id.iloc[0]),),
             )
         self.con.commit()
 
